@@ -1,9 +1,11 @@
 # /app/routes/todos.py
 
-from .router import get, post, delete
-from domain import ToDo, CreateToDoInput
 from typing import Dict, List, Optional
 
+from blacksheep.server.responses import not_found
+from domain import CreateToDoInput, ToDo
+
+from .router import delete, get, post
 
 _MOCKED: Dict[int, ToDo] = {
     1: ToDo(
@@ -34,7 +36,7 @@ async def get_todo(todo_id: int) -> Optional[ToDo]:
     try:
         return _MOCKED[todo_id]
     except KeyError:
-        return None
+        return not_found()
 
 
 @post("/api/todos")

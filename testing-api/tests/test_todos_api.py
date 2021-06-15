@@ -19,7 +19,7 @@ async def test_create_and_get_todo(test_client: TestClient) -> None:
 
     create_input = CreateToDoInput(
         title="Update documentation",
-        description=("Update blacksheep's documentation to describe all new features."),
+        description="Update blacksheep's documentation to describe all new features.",
     )
 
     response = await test_client.post(
@@ -46,3 +46,12 @@ async def test_create_and_get_todo(test_client: TestClient) -> None:
 
     assert todo.title == create_input.title
     assert todo.description == create_input.description
+
+
+@pytest.mark.asyncio
+async def test_get_not_existing_todo_returns_404(test_client: TestClient) -> None:
+
+    response = await test_client.get(f"/api/todos/-1")
+
+    assert response is not None
+    assert response.status == 404
