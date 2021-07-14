@@ -4,6 +4,7 @@ This folder contains an example showing how to test an API using the built-in
 `TestClient` and `pytest`.
 
 The preparation of this example is described in the official documentation under [testing](https://www.neoteroi.dev/blacksheep/testing/).
+This demo uses SQLite, refer to Piccolo's documentation to use PostgreSQL.
 
 ## Getting started
 
