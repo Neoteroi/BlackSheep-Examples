@@ -77,8 +77,6 @@ class JWTValidator:
         Validates the given JWT and returns its payload. This method throws exception
         if the JWT is not valid (i.e. its signature cannot be verified, for example
         because the JWT expired).
-
-        This method is asynchronous because it can
         """
         public_key = await self.get_public_key(access_token)
 
