@@ -11,7 +11,7 @@ config_builder = ConfigurationBuilder(JSONFile("settings.json"))
 config = config_builder.build()
 
 
-app = Application(show_error_details=True)
+app = Application(show_error_details=config.show_error_details)
 
 
 app.use_authentication().add(

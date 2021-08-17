@@ -2,10 +2,11 @@ import logging
 from typing import Optional, Sequence
 
 from blacksheep.messages import Request
-from core.jwts import InvalidAuthorizationToken, JWTValidator
 from guardpost.asynchronous.authentication import AuthenticationHandler
 from guardpost.authentication import Identity, User
 from jwt.exceptions import InvalidTokenError
+
+from core.jwts import InvalidAuthorizationToken, JWTValidator
 
 
 def get_logger():
@@ -50,7 +51,7 @@ class JWTBearerAuthentication(AuthenticationHandler):
         token = authorization_value[7:].decode()
 
         try:
-            decoded = self._validator.validate_jwt(token)
+            decoded = await self._validator.validate_jwt(token)
         except (InvalidAuthorizationToken, InvalidTokenError) as ex:
             # pass, because the application might support more than one
             # authentication method
