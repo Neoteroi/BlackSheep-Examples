@@ -1,0 +1,14 @@
+{
+    "debug": true,
+    "show_error_details": true,
+    "auth": {
+        "client_id": "ac8ea850-5138-4fbb-962c-b1ed7ac55163",
+        "authority": "https://login.microsoftonline.com/robertoprevatogmail.onmicrosoft.com",
+        "valid_issuers": [
+            "https://login.microsoftonline.com/b62b317a-19c2-40c0-8650-2d9672324ac4/v2.0"
+        ],
+        "valid_audiences": [
+            "ac8ea850-5138-4fbb-962c-b1ed7ac55163"
+        ]
+    }
+}
