@@ -1,30 +1,24 @@
-from blacksheep.server import Application
+from blacksheep.server.application import Application
+from blacksheep.server.authentication.jwt import JWTBearerAuthentication
 from blacksheep.server.authorization import auth
-from configuration.common import ConfigurationBuilder
-from configuration.json import JSONFile
 from guardpost.common import AuthenticatedRequirement, Policy
 
-from app.auth.jwtbearer import JWTBearerAuthentication
-
-# read application settings from a configuration file
-config_builder = ConfigurationBuilder(JSONFile("settings.json"))
-config = config_builder.build()
-
-
-app = Application(show_error_details=config.show_error_details)
+app = Application()
 
 
 app.use_authentication().add(
     JWTBearerAuthentication(
-        authority=config.auth.authority,
-        valid_audiences=[config.auth.client_id],
-        valid_issuers=config.auth.valid_issuers,
+        authority="https://login.microsoftonline.com/robertoprevatogmail.onmicrosoft.com",
+        valid_audiences=["104bca60-c5a7-4ab9-83e1-7b9c8dad71e2"],
+        valid_issuers=[
+            "https://login.microsoftonline.com/b62b317a-19c2-40c0-8650-2d9672324ac4/v2.0"
+        ],
     )
 )
 
 authorization = app.use_authorization()
 
-authorization += Policy("authenticated", AuthenticatedRequirement())
+authorization += Policy("any_name", AuthenticatedRequirement())
 
 get = app.router.get
 
@@ -34,7 +28,7 @@ def home():
     return "Hello, World"
 
 
-@auth("authenticated")
+@auth("any_name")
 @get("/api/message")
 def example():
     return "This is only for authenticated users"
