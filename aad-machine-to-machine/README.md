@@ -1,4 +1,4 @@
-# Machine to machine (M2M) communication using Azure Active Directory
+# Machine to machine (M2M) communication using <br>Azure Active Directory
 
 This example shows:
 * how to configure an API to require access tokens issued by Azure Active Directory
