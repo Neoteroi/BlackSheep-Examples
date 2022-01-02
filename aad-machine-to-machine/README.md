@@ -9,6 +9,9 @@ This example shows:
 `client.py` contains the client definition that, using MSAL for Python, obtains access
 tokens using `client credentials flow` and calls the server.
 
+`client_http_example.py` shows an example of how the client credentials flow with secret can
+be used with HTTP, without using MSAL for Python.
+
 ## How to run this example
 
 1. configure app registrations in a Azure Active Directory tenant
