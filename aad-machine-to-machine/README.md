@@ -6,11 +6,13 @@ This example shows:
   able to handle secrets), as a background worker or daemon (without user interaction)
 
 `server.py` contains the server definition that requires and validates access tokens.
+
 `client.py` contains the client definition that, using MSAL for Python, obtains access
 tokens using `client credentials flow` and calls the server.
 
-`http_example.py` shows an example of how the client credentials flow with secret can
-be used with HTTP, without using MSAL for Python.
+The picture below illustrates the flow of this example.
+
+![Client](https://gist.githubusercontent.com/RobertoPrevato/38a0598b515a2f7257c614938843b99b/raw/7ccbef683b18379ccf003ae9c7823ee03f3dc9f5/client-credentials-flow.png)
 
 ## How to run this example
 
@@ -25,6 +27,9 @@ be used with HTTP, without using MSAL for Python.
 
 `client.py` should display that an access token is obtained successfully from Azure
 Active Directory and a call to the running server was successful.
+
+`http_example.py` shows an example of how the client credentials flow with secret can be
+used with HTTP, without using MSAL for Python.
 
 ## Example .env file
 
