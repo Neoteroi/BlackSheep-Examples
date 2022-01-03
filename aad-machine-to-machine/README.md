@@ -16,6 +16,11 @@ The picture below illustrates the flow of this example.
 
 ## How to run this example
 
+> ⚠️ **Attention** this example works well under Unix, there is a performance
+> issue when it is run on Windows. Please use WSL on Windows, to run this
+> example without experiencing the performance issue (the issue is
+> under investigation).
+
 1. configure app registrations in a Azure Active Directory tenant
 2. create a `.env` file with appropriate values, like in the example below,
    or in alternative, configure the environmental variables as in the same
