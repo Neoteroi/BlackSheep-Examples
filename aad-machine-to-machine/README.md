@@ -15,7 +15,7 @@ Refer to the information under `certs` folder to have a reference on how to gene
 certificates for Azure Active Directory.
 
 `client_http_example.py` shows an example using the client credentials flow
-with secret can with HTTP, without using MSAL for Python.
+with secret with an HTTP POST request to the token endpoint, without using MSAL for Python.
 
 The following scheme describes the flow of this example.
 
