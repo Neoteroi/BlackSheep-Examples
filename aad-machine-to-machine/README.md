@@ -3,7 +3,7 @@
 This example shows:
 * how to configure an API to require access tokens issued by Azure Active Directory
 * how to obtain access tokens for a confidential client (meaning an application that is
-  able to handle secrets), as a background worker or daemon, without user interaction
+  able to handle secrets), running as a background worker or daemon, without user interaction
 
 `server.py` contains the server definition that requires and validates access tokens.
 `client_using_secret.py` contains a client definition that, using [MSAL for Python](https://github.com/AzureAD/microsoft-authentication-library-for-python), obtains access
