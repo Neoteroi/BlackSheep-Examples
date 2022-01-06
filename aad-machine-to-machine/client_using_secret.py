@@ -1,3 +1,7 @@
+"""
+This module shows an example of how the client credentials flow with secret can be
+used with Azure Active Directory and MSAL for Python.
+"""
 import logging
 import os
 

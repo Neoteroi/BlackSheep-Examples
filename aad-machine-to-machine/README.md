@@ -3,14 +3,27 @@
 This example shows:
 * how to configure an API to require access tokens issued by Azure Active Directory
 * how to obtain access tokens for a confidential client (meaning an application that is
-  able to handle secrets), as a background worker or daemon (without user interaction)
+  able to handle secrets), as a background worker or daemon, without user interaction
 
 `server.py` contains the server definition that requires and validates access tokens.
-`client.py` contains the client definition that, using MSAL for Python, obtains access
-tokens using `client credentials flow` and calls the server.
+`client_using_secret.py` contains a client definition that, using [MSAL for Python](https://github.com/AzureAD/microsoft-authentication-library-for-python), obtains access
+tokens using the `client credentials flow` **with a secret**, and calls the server.
 
-`client_http_example.py` shows an example of how the client credentials flow with secret can
-be used with HTTP, without using MSAL for Python.
+`client_using_certificate.py` contains a client definition that, using [MSAL for Python](https://github.com/AzureAD/microsoft-authentication-library-for-python), obtains access
+tokens using the `client credentials flow` **with a certificate**, and calls the server.
+Refer to the information under `certs` folder to have a reference on how to generate valid
+certificates for Azure Active Directory.
+
+`client_http_example.py` shows an example using the client credentials flow
+with secret can with HTTP, without using MSAL for Python.
+
+The following scheme describes the flow of this example.
+
+![Scheme](https://gist.githubusercontent.com/RobertoPrevato/38a0598b515a2f7257c614938843b99b/raw/7ccbef683b18379ccf003ae9c7823ee03f3dc9f5/client-credentials-flow.png)
+
+* Client is the application running as daemon, connecting to the API
+* AAD is Azure Active Directory
+* API is the web application exposing an API and requiring access tokens
 
 ## How to run this example
 
@@ -28,6 +41,9 @@ Active Directory and a call to the running server was successful.
 
 ## Example .env file
 
+To configure application settings to run these examples, create an `.env` file
+with contents like in the following block:
+
 ```bash
 # Server configuration
 API_ISSUER="https://sts.windows.net/<YOUR_TENANT_ID>/"
@@ -38,4 +54,9 @@ AAD_AUTHORITY="https://login.microsoftonline.com/<YOUR_TENANT_ID>/"
 APP_CLIENT_ID="<YOUR_CLIENT_APP_CLIENT_ID>"
 APP_CLIENT_SECRET="<YOUR_CLIENT_APP_SECRET>"
 APP_CLIENT_SCOPE="<YOUR_API_APP_CLIENT_ID>/.default"
+
+# For the example using a certificate:
+APP_CLIENT_CERT_THUMBPRINT="<YOUR_CERT_THUMBPRINT>"
 ```
+
+The `.env` file is read using `python-dotenv` when the examples are run.

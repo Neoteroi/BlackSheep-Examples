@@ -1,3 +1,9 @@
+"""
+This module shows an example of how the client credentials flow with secret can be used
+directly using an HTTP Client, for Azure Active Directory.
+This should be used only in those scenario when legacy applications would not support
+MSAL for Python.
+"""
 import os
 
 import httpx
