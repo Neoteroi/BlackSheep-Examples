@@ -27,6 +27,8 @@ The following scheme describes the flow of this example.
 
 ## How to run this example
 
+To run the example using the secret:
+
 1. configure app registrations in a Azure Active Directory tenant
 2. create a `.env` file with appropriate values, like in the example below,
    or in alternative, configure the environmental variables as in the same
@@ -34,10 +36,18 @@ The following scheme describes the flow of this example.
 3. create a Python virtual environment, install the dependencies in `requirements.txt`
 4. activate the virtual environment in two terminals, then:
 5. run the server in one terminal `python server.py`
-6. run the client file in another terminal `python client.py`
+6. run the client file in another terminal `python client_using_secret.py`
 
-`client.py` should display that an access token is obtained successfully from Azure
-Active Directory and a call to the running server was successful.
+> ⚠️ **Attention** the example `server.py` works well under Unix, there is a
+> performance issue when it is run on Windows. **The client part works well**.
+> Please use WSL on Windows, to run this example without experiencing the
+> performance issue (the issue is under investigation).
+
+The client file should display that an access token is obtained successfully
+from Azure Active Directory and a call to the running server was successful.
+
+`http_example.py` shows an example of how the client credentials flow with secret can be
+used with HTTP, without using MSAL for Python.
 
 ## Example .env file
 
