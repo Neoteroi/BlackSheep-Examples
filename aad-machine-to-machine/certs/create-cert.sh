@@ -29,12 +29,6 @@ else
     print_info "The generated PFX will be password protected"
 fi
 
-if [ -z "$SUBJECT" ]; then
-    SUBJECT="/C=IT/ST=WAW/L=WAW/O=DTC/OU=Cloud Team/CN=cloud.demant.com"
-
-    print_info "Using default subject: $SUBJECT"
-fi
-
 PRIVATE_RSA_NAME=$NAME.pri.pem
 PUBLIC_KEY_NAME=$NAME-publickey.cer
 PFX_NAME=$NAME-for-aad.pfx
