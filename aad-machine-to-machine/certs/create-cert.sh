@@ -7,11 +7,11 @@
 # NAME=foo ./create-cert.sh
 #
 # With subject:
-# NAME=roberto SUBJECT="/C=IT/ST=TO/L=TO/O=E/OU=Example Team/CN=example.com" ./create-cert.sh
+# NAME=example SUBJECT="/C=IT/ST=TO/L=TO/O=E/OU=Example Team/CN=example.com" ./create-cert.sh
 #
-# With password for PFX:
-# NAME=roberto SUBJECT="/C=IT/ST=TO/L=TO/O=E/OU=Example Team/CN=example.com" PFX_PASS=FooFoo ./create-cert.sh
-#
+# ATTENTION: if you use Git Bash for Windows,
+# use this command instead (to avoid POSIX-to-Windows path conversion for the SUBJECT):
+# MSYS_NO_PATHCONV=1 NAME=example SUBJECT="/C=IT/ST=TO/L=TO/O=E/OU=Example Team/CN=example.com" ./create-cert.sh
 
 source common.sh
 
