@@ -1,0 +1,5 @@
+blacksheep
+msal
+uvicorn
+python-dotenv
+httpx
