@@ -2,6 +2,7 @@
 This module shows an example of how the client credentials flow with secret can be
 used with Azure Active Directory and MSAL for Python.
 """
+import asyncio
 import logging
 import os
 
@@ -33,21 +34,27 @@ if "access_token" in result:
     access_token = result["access_token"]
     logging.info("Access token %s", access_token)
 
-    # call the API using the access token
-    for _ in range(4):
-        response = httpx.get(
-            "http://localhost:5000", headers={"Authorization": f"Bearer {access_token}"}
-        )
+    async def calls():
+        # call the API using the access token
+        async with httpx.AsyncClient(timeout=60) as client:
+            for _ in range(4):
+                response = await client.get(
+                    "http://localhost:5000",
+                    headers={"Authorization": f"Bearer {access_token}"},
+                )
 
-        if response.status_code != 200:
-            logging.error(
-                "The request to the API failed, with status %s", response.status_code
-            )
-        else:
-            logging.info(
-                "The request to the API server succeeded. Response body: %s",
-                response.text,
-            )
+                if response.status_code != 200:
+                    logging.error(
+                        "The request to the API failed, with status %s",
+                        response.status_code,
+                    )
+                else:
+                    logging.info(
+                        "The request to the API server succeeded. Response body: %s",
+                        response.text,
+                    )
+
+    asyncio.run(calls())
 
 else:
     print(result.get("error"))

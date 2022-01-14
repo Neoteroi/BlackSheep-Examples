@@ -38,11 +38,6 @@ To run the example using the secret:
 5. run the server in one terminal `python server.py`
 6. run the client file in another terminal `python client_using_secret.py`
 
-> ⚠️ **Attention** the example `server.py` works well under Unix, there is a
-> performance issue when it is run on Windows. **The client part works well**.
-> Please use WSL on Windows, to run this example without experiencing the
-> performance issue (the issue is under investigation).
-
 The client file should display that an access token is obtained successfully
 from Azure Active Directory and a call to the running server was successful.
 
