@@ -1,3 +1,5 @@
+[![Video tutorial](https://gist.githubusercontent.com/RobertoPrevato/b9f5162bfe6082876ec2d9811cc554b0/raw/299af557b36c9495253eab93dbd4e7afa8421699/video-tutorial.svg)](https://youtu.be/-SPEcQxgOOQ)
+
 # Machine to machine (M2M) communication using <br>Azure Active Directory
 
 This example shows:
