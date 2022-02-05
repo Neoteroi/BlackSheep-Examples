@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BlackSheep WebSocket Example</title>
+    <script src="https://unpkg.com/vue@next"></script>
+    <style>
+        .controls {
+            display: flex;
+            column-gap: 3px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <p><b>Your client ID is {{ CLIENT_ID }}</b></p>
+    <p>Status: {{ status }}</p>
+    <p>Messages:</p>
+    <ul>
+        <li v-for="message in messages" :key="message.timestamp">
+            <div><b>From:</b> {{ message.author }}</div>
+            <div><b>Sent:</b> {{ renderTimestamp(message.timestamp) }}</div>
+            <div><b>Text:</b> {{ message.text }}</div>
+        </li>
+    </ul>
+    <div class="controls" @keypress.enter.prevent="submit">
+        <input type="text" placeholder="Your message" v-model="messageText">
+        <button type="button" :disabled="!ws" @click.prevent="submit">Submit</button>
+        <button type="button" :disabled="ws" @click.prevent="connect(WS_URL)">Connect</button>
+        <button type="button" :disabled="!ws" @click.prevent="disconnect">Disconnect</button>
+    </div>
+</div>
+<script>
+  CLIENT_ID = crypto.randomUUID()
+  WS_URL = `ws://${location.host}/ws/${CLIENT_ID}`
+
+  const app = {
+    data() {
+      return {
+        messages: [],
+        messageText: "",
+        ws: null,
+        status: "Disconnected",
+        WS_URL,
+        CLIENT_ID
+      }
+    },
+    methods: {
+      makeMessage() {
+        return {
+          author: this.CLIENT_ID,
+          text: this.messageText,
+          timestamp: new Date().toISOString()
+        }
+      },
+      submit() {
+        const message = this.makeMessage()
+        this.ws.send(JSON.stringify(message))
+        this.messageText = ""
+      },
+      connect(url) {
+        const ws = new WebSocket(url)
+
+        ws.addEventListener("open", (evt) => {
+          this.status = "Connected"
+          console.log("Open", evt)
+        })
+
+        ws.addEventListener("message", (evt) => {
+          this.messages.push(JSON.parse(evt.data))
+          console.log("Message", evt)
+        })
+
+        ws.addEventListener("close", (evt) => {
+          this.status = "Disconnected"
+          console.log("Close", evt)
+        })
+
+        ws.addEventListener("error", (evt) => {
+          this.status = "Error (see console)"
+          console.error("Error", evt)
+        })
+
+        this.ws = ws
+      },
+      disconnect() {
+        this.ws.close()
+        this.ws = null
+        this.messages = []
+      },
+      renderTimestamp(timestamp) {
+        return new Date(timestamp).toLocaleTimeString()
+      }
+    }
+  }
+
+  Vue.createApp(app).mount("#app")
+</script>
+</body>
+</html>
