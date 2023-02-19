@@ -7,8 +7,8 @@ This repository contains examples of OpenID Connect integration with three
 identity providers:
 
 - [Auth0](https://auth0.com)
-- [Okta](https://www.okta.com)
 - [Azure Active Directory](https://azure.microsoft.com/en-us/products/active-directory)
+- [Okta](https://www.okta.com)
 
 ## Basic examples (id_token only)
 
