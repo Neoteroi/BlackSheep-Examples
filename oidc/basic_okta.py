@@ -1,10 +1,10 @@
+"""
+This example shows how to configure an OpenID Connect integration with Okta, obtaining
+only an id_token, exchanged with the client using a response cookie.
+"""
 import uvicorn
 from blacksheep.server.application import Application
-from blacksheep.server.authentication.oidc import (
-    OpenIDSettings,
-    use_openid_connect,
-    CookiesTokensStore,
-)
+from blacksheep.server.authentication.oidc import OpenIDSettings, use_openid_connect
 
 from common.routes import register_routes
 
@@ -19,7 +19,6 @@ use_openid_connect(
         client_id="0oa2gy88qiVyuOClI5d7",
         callback_path="/authorization-code/callback",
     ),
-    tokens_store=CookiesTokensStore(),
 )
 
 register_routes(app)

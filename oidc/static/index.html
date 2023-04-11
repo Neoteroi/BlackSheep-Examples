@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>OIDC Example with JWT Authentication</title>
+    <meta charset="utf-8" />
+    <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
+  </head>
+  <body>
+    <h1>Example OIDC integration with JWT Authentication</h1>
+    <p>
+        This example avoids using Cookie based authentication: session
+        tokens are not shared with the client using cookies, but using HTML documents
+        that write information using the HTML5 Storage API.
+    </p>
+    <hr />
+    <div id="user-info"></div>
+    <script src="jwt-decode.js"></script>
+    <script>
+    (function init() {
+        const storage = sessionStorage;
+
+        async function getUserInfo(id_token) {
+            const response = await fetch('/auth/me', {
+                headers: {
+                    "Authorization": `Bearer ${id_token}`
+                }
+            });
+            if (response.status === 401) {
+                throw new Error("The token is not valid");
+            }
+            const payload = await response.json();
+            return payload;
+        }
+
+        async function getNewTokens() {
+            const response = await fetch('/refresh-token', {
+                method: "POST",
+                headers: {
+                    "X-Refresh-Token": storage.getItem("REFRESH_TOKEN")
+                }
+            });
+            if (response.status !== 200) {
+                throw new Error("Failed to refresh tokens");
+            }
+            const payload = await response.json();
+            return payload;
+        }
+
+        function isTokenExpired(token) {
+            const claims = jwt_decode(token);
+            const exp = claims["exp"];
+
+            if (exp === undefined) {
+                throw new Error("Missing expiration claim.");
+            }
+
+            return new Date(exp * 1000 - 6000) < new Date();
+        }
+
+        const messageElement = document.getElementById("user-info");
+
+        const id_token = storage.getItem("ID_TOKEN");
+        const access_token = storage.getItem("ACCESS_TOKEN");
+        const refresh_token = storage.getItem("REFRESH_TOKEN");
+
+        function displayAccessToken(html, access_token) {
+            if (access_token) {
+                const data = jwt_decode(access_token);
+                const claims = JSON.stringify(data, undefined, 4);
+                html.push(`
+                    <p>You also have an access token for an API:</p>
+                    <pre>${claims}</pre>
+                    <p>Your access token expires at: ${new Date(data['exp']*1000)}</p><hr />
+                `)
+            }
+        }
+
+        const html = [];
+        if (id_token) {
+            if (isTokenExpired(id_token)) {
+                // try obtaining a new token, if there is a refresh token
+                if (refresh_token) {
+                    getNewTokens().then((newTokens) => {
+                        storage.setItem("ID_TOKEN", newTokens.id_token);
+                        storage.setItem("ACCESS_TOKEN", newTokens.access_token);
+                        storage.setItem("REFRESH_TOKEN", newTokens.refresh_token);
+                        init();
+                    }, () => {
+                        storage.removeItem("ID_TOKEN");
+                        storage.removeItem("ACCESS_TOKEN");
+                        storage.removeItem("REFRESH_TOKEN");
+                        init();
+                    });
+                    return;
+                }
+            }
+            console.info("The user is signed-in. ✨ Information about the user can be read parsing the `id_token`")
+
+            console.info("This is the id_token: ", id_token);
+
+            // parsing on the client side:
+            const claims = jwt_decode(id_token);
+            console.info("Read on the client side: ", claims);
+
+            html.push(`<h1>Welcome!</h1>`);
+
+            // make a web request to obtain user information (anyway, it would be also
+            // possible to parse the id_token on the client side - since in most cases
+            // it is not encrypted, only signed
+            getUserInfo(id_token).then((data) => {
+                console.log("User claims:", data);
+                const id_claims = JSON.stringify(data, undefined, 4);
+                html.push(`
+                    <p>These are the claims from the <em>id_token</em>:</p>
+                    <pre>${id_claims}</pre>
+                    <p>Your token expires at: ${new Date(data['exp']*1000)}</p><hr />
+                `)
+                displayAccessToken(html, access_token);
+                html.push(`<a href='/sign-out'>Sign out here.</a><br/>`);
+                messageElement.innerHTML = html.join("");
+            }, (error) => {
+                if (error.message === "The token is not valid") {
+                    storage.removeItem("ID_TOKEN");
+                    location.assign("/sign-in");
+                    return;
+                }
+                html.push(`<p style="color: red;">Oh, no! Something went wrong!</p>`)
+                messageElement.innerHTML = html.join("");
+            });
+        } else {
+            console.info("The user is not authenticated.");
+            html.push(`
+                <h1>You are not authenticated!</h1>
+                <a href='/sign-in'>Sign in here.</a><br/>
+            `)
+            messageElement.innerHTML = html.join("");
+        }
+    })();
+    </script>
+  </body>
+</html>

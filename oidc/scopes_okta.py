@@ -1,10 +1,13 @@
+"""
+This example shows how to configure an OpenID Connect integration with Okta, obtaining
+an id_token, an access_token, and a refresh_token. The id_token is exchanged with the
+client using a response cookie (also used to authenticate users
+for following requests), while access token and the refresh token are not stored and
+can only be accessed using optional events.
+"""
 import uvicorn
 from blacksheep.server.application import Application
-from blacksheep.server.authentication.oidc import (
-    OpenIDSettings,
-    use_openid_connect,
-    CookiesTokensStore,
-)
+from blacksheep.server.authentication.oidc import OpenIDSettings, use_openid_connect
 from dotenv import load_dotenv
 
 from common.routes import register_routes
@@ -25,7 +28,6 @@ use_openid_connect(
         callback_path="/authorization-code/callback",
         scope="openid read:todos",
     ),
-    tokens_store=CookiesTokensStore(),
 )
 
 register_routes(app)

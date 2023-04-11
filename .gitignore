@@ -131,3 +131,5 @@ dmypy.json
 *.pfx
 *.pem
 *.cer
+.ruff_cache
+/**/.ruff_cache

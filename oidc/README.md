@@ -1,6 +1,10 @@
 # OIDC Examples
 Working examples of OpenID Connect integrations in BlackSheep applications.
 
+:warning: these examples work with BlackSheep v2. Browse the repository
+at [tag `v1`](https://github.com/Neoteroi/BlackSheep-Examples/tree/v1) to see
+examples for `blacksheep` v1.
+
 ---
 
 This repository contains examples of OpenID Connect integration with three
@@ -9,6 +13,17 @@ identity providers:
 - [Auth0](https://auth0.com)
 - [Azure Active Directory](https://azure.microsoft.com/en-us/products/active-directory)
 - [Okta](https://www.okta.com)
+
+And illustrate the following scenarios:
+- exchanging `id_token` with clients using response cookies, users are
+  authenticated in following requests using those cookies, this is the default
+  configuration.
+- exchanging tokens with clients using the HTML5 Storage API, users are later
+  authenticated using JWT Bearer tokens (see examples with 'storage' in
+  their file names).
+- using a [Redis](https://github.com/redis/redis-py) cache to store access
+  tokens and refresh tokens, when id_tokens are exchanged with clients using
+  cookies (see the example with "redis" in the file name.
 
 ## Basic examples (id_token only)
 
@@ -68,3 +83,10 @@ App registrations for these examples are slightly more complex, since they
 require configuring an API with scopes. Describing these details is beyond the
 scope of this repository. For more information on this subject, refer to the
 documentation of the identity providers (for example, for [Auth0 here](https://auth0.com/docs/get-started/apis/api-settings))
+
+
+## Examples using the HTML5 Storage API instead of cookies
+
+See the examples with 'storage' in their file names, to see how tokens can be
+exchanged with the clients using the HTML5 Storage API instead of response
+cookies (useful to improve reusability of web APIs).
