@@ -43,8 +43,29 @@ handler = use_openid_connect(
     ),
 )
 
-assert isinstance(handler.auth_handler, CookiesOpenIDTokensHandler)
-handler.auth_handler.tokens_store = RedisTokensStore(redis.Redis())
+
+@app.lifespan
+async def configure_redis():
+    """
+    Configure an async Redis client, and dispose its connections when the application
+    stops.
+    See:
+    https://redis.readthedocs.io/en/stable/examples/asyncio_examples.html
+    """
+    connection = redis.Redis()
+    print(f"Ping successful: {await connection.ping()}")
+
+    app.services.register(redis.Redis, instance=connection)
+
+    # configure the tokens store of the authentication handler
+    assert isinstance(handler.auth_handler, CookiesOpenIDTokensHandler)
+    handler.auth_handler.tokens_store = RedisTokensStore(redis.Redis())
+
+    yield connection
+
+    print("Disposing the Redis connection pool...")
+    await connection.close()
+
 
 register_routes(app)
 
