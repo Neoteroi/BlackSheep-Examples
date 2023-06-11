@@ -1,0 +1,3 @@
+blacksheep==1.2.15
+Flask==2.3.2
+uvicorn==0.22.0

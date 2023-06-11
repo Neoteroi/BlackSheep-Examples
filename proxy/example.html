@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            margin: 20px;
+            font-family: sans-serif;
+        }
+
+        section {
+            border-bottom: 1px dotted gray;
+            padding-bottom: 20px;
+        }
+
+        li {
+            padding: 3px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Proxy example</h1>
+
+    <ol>
+        <li>Start the Flask application.</li>
+        <li>Start the BlackSheep application.</li>
+        <li>Try using this page.</li>
+        <li>Try uploading files.</li>
+        <li>Check the response, and the `out` folder.</li>
+    </ol>
+
+    <section>
+        <h2>Static files</h2>
+        <p>The following image is served by the Flask app.</p>
+        <img src="http://localhost:44777/Octocat.jpg" width="100" alt="Octocat served by the Flask app" />
+        <br />
+        <p>The following image is served by the BlackSheep app.</p>
+        <img src="http://localhost:44555/Octocat.jpg" width="100" alt="Octocat served by the Flask app" />
+    </section>
+
+    <section>
+        <h2>Test the upload to the Flask Server directly:</h2>
+        <p>The response should display JSON information about the request, and uploaded files should be written to the
+            "out" folder.</p>
+        <form action="http://localhost:44777/upload" method="post" enctype="multipart/form-data">
+            <label for="fname">First name:</label>
+            <input type="text" id="fname" name="fname" required><br><br>
+            <label for="lname">Last name:</label>
+            <input type="text" id="lname" name="lname" required><br><br>
+            <label for="files">Select some files:</label>
+            <input id="files" type="file" name="files" multiple required/>
+            <input type="submit" value="Submit">
+        </form>
+
+
+        <h2>Test the upload to the BlackSheep proxy (which proxies to the Flask app):</h2>
+        <p>The response should display JSON information about the request, and uploaded files should be written to the
+            "out" folder.</p>
+        <form action="http://localhost:44555/upload" method="post" enctype="multipart/form-data">
+            <label for="fname">First name:</label>
+            <input type="text" id="fname" name="fname" required><br><br>
+            <label for="lname">Last name:</label>
+            <input type="text" id="lname" name="lname" required><br><br>
+            <label for="files">Select some files:</label>
+            <input id="files" type="file" name="files" multiple required/>
+            <input type="submit" value="Submit">
+        </form>
+    </section>
+</body>
+
+</html>
