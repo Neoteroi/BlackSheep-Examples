@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>The form enctype attribute</h1>
+
+<h2>Test the upload to the Flask Server directly:</h2>
+<p>The response should display JSON information about the request, and uploaded files should be written to the "out" folder.</p>
+<form action="http://localhost:44777/upload" method="post" enctype="multipart/form-data">
+  <label for="fname">First name:</label>
+  <input type="text" id="fname" name="fname"><br><br>
+  <label for="lname">Last name:</label>
+  <input type="text" id="lname" name="lname"><br><br>
+  <label for="files">Select some files:</label>
+  <input id="files" type="file" name="files" multiple />
+  <input type="submit" value="Submit">
+</form>
+
+
+<h2>Test the upload to the BlackSheep proxy (which proxies to the Flask app):</h2>
+<p>The response should display JSON information about the request, and uploaded files should be written to the "out" folder.</p>
+<form action="http://localhost:44555/upload" method="post" enctype="multipart/form-data">
+  <label for="fname">First name:</label>
+  <input type="text" id="fname" name="fname"><br><br>
+  <label for="lname">Last name:</label>
+  <input type="text" id="lname" name="lname"><br><br>
+  <label for="files">Select some files:</label>
+  <input id="files" type="file" name="files" multiple />
+  <input type="submit" value="Submit">
+</form>
+
+</body>
+</html>
