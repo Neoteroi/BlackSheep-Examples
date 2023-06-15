@@ -39,10 +39,5 @@ def upload_files():
     )
 
 
-@app.route("/picture.jpg")
-def serve_picture():
-    return app.send_static_file("pexels-photo-126407.jpeg")
-
-
 if __name__ == "__main__":
     app.run(host="localhost", port=44777, debug=True)
