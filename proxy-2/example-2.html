@@ -22,8 +22,8 @@
     <h1>Proxy example</h1>
 
     <ol>
-        <li>Start the Flask application.</li>
-        <li>Start the BlackSheep application.</li>
+        <li>Start the first BlackSheep application (localhost:44777).</li>
+        <li>Start the proxy BlackSheep application (localhost:44555).</li>
         <li>Try using this page.</li>
         <li>Try uploading files.</li>
         <li>Check the response, and the `out` folder.</li>
@@ -31,15 +31,15 @@
 
     <section>
         <h2>Static files</h2>
-        <p>The following image is served by the Flask app.</p>
-        <img src="http://localhost:44777/Octocat.jpg" width="100" alt="Octocat served by the Flask app" />
+        <p>The following image is served by the first BlackSheep app.</p>
+        <img src="http://localhost:44777/Octocat.jpg" width="100" alt="Octocat served by the second BlackSheep app" />
         <br />
-        <p>The following image is served by the BlackSheep app.</p>
-        <img src="http://localhost:44555/Octocat.jpg" width="100" alt="Octocat served by the BlackSheep app" />
+        <p>The following image is served by the BlackSheep proxy app.</p>
+        <img src="http://localhost:44555/Octocat.jpg" width="100" alt="Octocat served by the first BlackSheep app" />
     </section>
 
     <section>
-        <h2>Test the upload to the Flask Server directly:</h2>
+        <h2>Test the upload to the first BlackSheep app directly:</h2>
         <p>The response should display JSON information about the request, and uploaded files should be written to the
             "out" folder.</p>
         <form action="http://localhost:44777/upload" method="post" enctype="multipart/form-data">
@@ -53,7 +53,7 @@
         </form>
 
 
-        <h2>Test the upload to the BlackSheep proxy (which proxies to the Flask app):</h2>
+        <h2>Test the upload to the BlackSheep proxy (which proxies to the first BlackSheep app):</h2>
         <p>The response should display JSON information about the request, and uploaded files should be written to the
             "out" folder.</p>
         <form action="http://localhost:44555/upload" method="post" enctype="multipart/form-data">

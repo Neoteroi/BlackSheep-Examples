@@ -6,10 +6,10 @@ Run the Flask application:
 python flask_app/server.py
 ```
 
-Run the BlackSheep application:
+Run the BlackSheep proxy application:
 
 ```bash
-python blacksheep_app/server.py
+python blacksheep_proxy/server.py
 ```
 
 Open the file "example.html" and use its forms to test uploading to the Flask
@@ -25,3 +25,21 @@ The example proxy in `blacksheep_proxy` handles memory in the proper way:
 It always sends response contents backs using `Transfer-Encoding: chunked`,
 which might or might not be desirable, but ensures memory is handled
 efficiently.
+
+## Other example
+`other-example.html` is similar to `example.html`, with the exception that both
+the back-end app and the proxy server are implemented using BlackSheep.
+
+Run the frst BlackSheep application:
+
+```bash
+python blacksheep_app/server.py
+```
+
+Run the BlackSheep proxy application:
+
+```bash
+python blacksheep_proxy/server.py
+```
+
+Open `other-example.html` in a browser.
