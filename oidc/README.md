@@ -74,6 +74,8 @@ This example can be tested by anyone having a Google account.
 
 ![Google demo](./docs/google-demo.png)
 
+![Google app settings](./docs/google-app-settings.png)
+
 ### Okta
 
 This example illustrates navigating to a sign-in page, but cannot be tested
