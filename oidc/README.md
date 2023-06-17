@@ -67,6 +67,13 @@ creating an account in the Neoteroi account in Auth0.
 
 ![Auth0 demo with Google](./docs/auth0-demo-with-google.png)
 
+### Google
+
+This example can be tested by anyone having a Google account.
+**Note:** it has been tested and it works also with `BlackSheep` v1.
+
+![Google demo](./docs/google-demo.png)
+
 ### Okta
 
 This example illustrates navigating to a sign-in page, but cannot be tested
