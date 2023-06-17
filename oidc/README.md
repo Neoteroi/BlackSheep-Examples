@@ -12,6 +12,7 @@ identity providers:
 
 - [Auth0](https://auth0.com)
 - [Azure Active Directory](https://azure.microsoft.com/en-us/products/active-directory)
+- [Google](https://developers.google.com/identity/sign-in/web/sign-in)
 - [Okta](https://www.okta.com)
 
 And illustrate the following scenarios:
