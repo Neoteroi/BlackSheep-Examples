@@ -1,2 +1,2 @@
-blacksheep>=1.2.16
+blacksheep>=1.2.17
 uvicorn==0.22.0
