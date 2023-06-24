@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+    <style>
+        body {
+            margin: 20px;
+            font-family: sans-serif;
+        }
+
+        section {
+            border-bottom: 1px dotted gray;
+            padding-bottom: 20px;
+        }
+
+        li {
+            padding: 3px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Uploading a file</h1>
+    <form id="example-form">
+        <div>
+            <label for="file-selection">Select file to upload (example with max body size 1.5 MB)</label>
+            <input id="file-selection" type="file" required>
+        </div>
+        <br />
+        <button id="submit-button" type="submit">Upload</button>
+    </form>
+    <pre id="output"></pre>
+    <script>
+        (function () {
+            const outputElement = document.getElementById("output");
+
+            document
+                .getElementById("example-form")
+                .addEventListener("change", function (e) {
+                    e.preventDefault();
+                    return false;
+                }, false);
+
+            const upload = (file) => {
+                fetch("http://localhost:44555/upload-file", {
+                    method: "POST",
+                    headers: {
+                        "File-Name": file.name,
+                        "File-Type": file.type,
+                        "File-Size": file.size
+                    },
+                    body: file
+                }).then(
+                    response => response.json()
+                ).then(
+                    success => {
+                        outputElement.innerHTML = JSON.stringify(success, undefined, 4);
+                        console.log(success);
+                    }
+                ).catch(
+                    error => {
+                        outputElement.innerHTML = JSON.stringify(error, undefined, 4);
+                        console.log(error);
+                    }
+                );
+            };
+
+            const input = document.getElementById("file-selection");
+
+            document
+                .getElementById("submit-button")
+                .addEventListener("click", function onSubmit(e) {
+                    e.preventDefault();
+                    const file = input.files[0];
+                    if (file) {
+                        upload(file);
+                    }
+                    return false;
+                }, false);
+        })();
+    </script>
+</body>
+
+</html>
