@@ -1,0 +1,21 @@
+### Register new user
+POST http://localhost:8000/api/register
+Content-Type: application/json
+
+{
+    "username": "test@example.com",
+    "password": "password"
+}
+
+### Get JWT token
+POST http://localhost:8000/api/token
+Content-Type: application/json
+
+{
+    "username": "test@example.com",
+    "password": "password"
+}
+
+### Get secret message
+GET http://localhost:8000/api/protected
+Authorization: Bearer <token>
