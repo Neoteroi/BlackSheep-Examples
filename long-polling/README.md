@@ -32,7 +32,7 @@ async def client_example():
     # Note: request_timeout 5 seconds below causes the client to close the
     # connection after 5 seconds
     async with ClientSession(request_timeout=5) as client:
-        response = await client.get("http://localhost:44888/subscribe")
+        response = await client.get("http://localhost:8000/subscribe")
 
         assert response is not None
         text = await response.text()
