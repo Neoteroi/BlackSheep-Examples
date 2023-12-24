@@ -28,13 +28,6 @@ timeout:
 import asyncio
 from blacksheep.client import ClientSession
 
-
-async def close(session: ClientSession):
-    await asyncio.sleep(2)
-    print("CLOSING SESSION!")
-    await session.close()
-
-
 async def client_example():
     # Note: request_timeout 5 seconds below causes the client to close the
     # connection after 5 seconds
