@@ -79,14 +79,6 @@ async def on_start(_):
     signal.signal(signal.SIGINT, terminate_now)
 
 
-@app.on_stop
-async def on_stop(application: Application) -> None:
-    try:
-        manager.cancel_all_tasks()
-    except:
-        pass
-
-
 @get("/subscribe")
 async def on_subscribe(request):
     return await manager.subscribe(request)
