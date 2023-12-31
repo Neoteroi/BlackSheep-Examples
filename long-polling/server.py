@@ -49,8 +49,8 @@ class MessageManager:
                 # Note: here it is possible to check if the request is
                 # disconnected using: if await request.is_disconnected()
                 #
-                # This can be useful to avoid consuming operations from this point.
-                #
+                # This can be useful to avoid consuming operations from this point,
+                # or to cancel tasks.
                 if await request.is_disconnected():
                     print("🔥🔥🔥 Request is disconnected!")
                     return
