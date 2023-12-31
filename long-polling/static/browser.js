@@ -31,15 +31,14 @@ function SubscribePane(elem, url) {
     }
 
     async function subscribe() {
-        const controller = new AbortController()
-        const signal = controller.signal
-
-        // abort after 5 seconds
-        // setTimeout(() => {
-        //     controller.abort();
-        // }, 5000);
-
-        let response = await fetch(url, {signal: signal});
+        let response = await fetch(url).catch(() => {
+            // This can happen if the server restarts,
+            // we need to try again polling
+            setTimeout(() => {
+                subscribe();
+            }, 5000);
+            return;
+        });
 
         if (response.status == 502) {
             // Connection timeout
@@ -61,5 +60,4 @@ function SubscribePane(elem, url) {
     }
 
     subscribe();
-
 }
