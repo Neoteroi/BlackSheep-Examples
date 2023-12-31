@@ -1,8 +1,8 @@
 import asyncio
-from dataclasses import dataclass
 import signal
+from dataclasses import dataclass
 
-from blacksheep import Application, Request, get, no_content, ok, post, text, json
+from blacksheep import Application, Request, get, json, no_content, ok, post, text
 
 app = Application()
 app.serve_files("static")
@@ -18,6 +18,7 @@ class MessageManager:
         self.closing = False
         self._queues: list[asyncio.Queue] = []
         self._tasks: list[asyncio.Task] = []
+        self._timeout: float = 60
 
     async def subscribe(self, request: Request):
         if self.closing:
@@ -31,6 +32,7 @@ class MessageManager:
         try:
             response = await task
         except asyncio.CancelledError:
+            # Tasks are cancelled when the application stops
             print("Task cancelled...")
             return no_content()
         else:
@@ -40,8 +42,14 @@ class MessageManager:
             self._tasks.remove(task)
 
     async def wait_for_message(self, queue):
-        message = await queue.get()
-        return text(message)
+        try:
+            async with asyncio.timeout(self._timeout):
+                message = await queue.get()
+                return text(message)
+        except TimeoutError:
+            # Waited for the timeout period, now closing a Long-Polling request.
+            # The client must create a new request.
+            return text("")
 
     async def add_message(self, message):
         for queue in self._queues:
