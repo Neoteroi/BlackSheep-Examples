@@ -44,6 +44,10 @@ class MessageManager:
     async def wait_for_message(self, queue):
         try:
             async with asyncio.timeout(self._timeout):
+                # Note: here it would be possible to check if the request is
+                # disconnected using: if await request.is_disconnected()
+                # But it is not useful in this example because nothing bad happens if
+                # we write a response to the ASGI server anyway.
                 message = await queue.get()
                 return text(message)
         except TimeoutError:
