@@ -21,24 +21,18 @@ The JavaScript and front-end part of this example was adopted from:
 
 ## How to test a disconnection
 
-To test a client that disconnects, use for example a Python client with a short
-timeout:
+To test a client that disconnects, refresh a browser tab. The console should
+display messages like this one:
 
-```python
-import asyncio
-from blacksheep.client import ClientSession
-
-async def client_example():
-    # Note: request_timeout 5 seconds below causes the client to close the
-    # connection after 5 seconds
-    async with ClientSession(request_timeout=5) as client:
-        response = await client.get("http://localhost:8000/subscribe")
-
-        assert response is not None
-        text = await response.text()
-        print(text)
-
-
-asyncio.run(client_example())
-
+```bash
+INFO:     127.0.0.1:40834 - "POST /publish HTTP/1.1" 200 OK
+🔥🔥🔥 Request is disconnected!
+🔥🔥🔥 Request is disconnected!
+🔥🔥🔥 Request is disconnected!
+🔥🔥🔥 Request is disconnected!
+🔥🔥🔥 Request is disconnected!
+INFO:     127.0.0.1:40832 - "GET /subscribe?random=0.16177484986012614 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40882 - "GET /subscribe?random=0.08956117949704501 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40882 - "GET /subscribe?random=0.08956117949704501 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40832 - "GET /subscribe?random=0.16177484986012614 HTTP/1.1" 200 OK
 ```

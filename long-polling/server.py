@@ -1,8 +1,8 @@
 import asyncio
-from dataclasses import dataclass
 import signal
+from dataclasses import dataclass
 
-from blacksheep import Application, Request, get, no_content, ok, post, text, json
+from blacksheep import Application, Request, get, json, no_content, ok, post, text
 
 app = Application()
 app.serve_files("static")
@@ -18,6 +18,7 @@ class MessageManager:
         self.closing = False
         self._queues: list[asyncio.Queue] = []
         self._tasks: list[asyncio.Task] = []
+        self._timeout: float = 60
 
     async def subscribe(self, request: Request):
         if self.closing:
@@ -25,12 +26,13 @@ class MessageManager:
 
         request_queue = asyncio.Queue()
         self._queues.append(request_queue)
-        task = asyncio.create_task(self.wait_for_message(request_queue))
+        task = asyncio.create_task(self.wait_for_message(request, request_queue))
         self._tasks.append(task)
 
         try:
             response = await task
         except asyncio.CancelledError:
+            # Tasks are cancelled when the application stops
             print("Task cancelled...")
             return no_content()
         else:
@@ -39,9 +41,24 @@ class MessageManager:
             self._queues.remove(request_queue)
             self._tasks.remove(task)
 
-    async def wait_for_message(self, queue):
-        message = await queue.get()
-        return text(message)
+    async def wait_for_message(self, request, queue):
+        try:
+            async with asyncio.timeout(self._timeout):
+                message = await queue.get()
+
+                # Note: here it is possible to check if the request is
+                # disconnected using: if await request.is_disconnected()
+                #
+                # This can be useful to avoid consuming operations from this point.
+                #
+                if await request.is_disconnected():
+                    print("🔥🔥🔥 Request is disconnected!")
+                    return
+                return text(message)
+        except TimeoutError:
+            # Waited for the timeout period, now closing a Long-Polling request.
+            # The client must create a new request.
+            return text("")
 
     async def add_message(self, message):
         for queue in self._queues:
@@ -69,14 +86,6 @@ async def on_start(_):
         default_sigint_handler(signum, frame)  # type: ignore
 
     signal.signal(signal.SIGINT, terminate_now)
-
-
-@app.on_stop
-async def on_stop(application: Application) -> None:
-    try:
-        manager.cancel_all_tasks()
-    except:
-        pass
 
 
 @get("/subscribe")
