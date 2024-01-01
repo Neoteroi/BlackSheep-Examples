@@ -21,8 +21,8 @@ The JavaScript and front-end part of this example was adopted from:
 
 ## How to test a disconnection
 
-To test a client that disconnects, refresh a browser tab. The console should
-display messages like this one:
+To test a client that disconnects, refresh a browser tab, then send a message from an active tab. 
+The console should display messages like this one:
 
 ```bash
 INFO:     127.0.0.1:40834 - "POST /publish HTTP/1.1" 200 OK
