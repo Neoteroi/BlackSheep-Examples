@@ -13,11 +13,17 @@ class MessageInput:
     text: str
 
 
+@dataclass(slots=True)
+class ActiveRequest:
+    request: Request
+    task: asyncio.Task
+    queue: asyncio.Queue
+
+
 class MessageManager:
     def __init__(self) -> None:
         self.closing = False
-        self._queues: list[asyncio.Queue] = []
-        self._tasks: list[asyncio.Task] = []
+        self._active_requests: list[ActiveRequest] = []
         self._timeout: float = 60
 
     async def subscribe(self, request: Request):
@@ -25,9 +31,9 @@ class MessageManager:
             return text("")
 
         request_queue = asyncio.Queue()
-        self._queues.append(request_queue)
         task = asyncio.create_task(self.wait_for_message(request, request_queue))
-        self._tasks.append(task)
+        active_request = ActiveRequest(request, task, request_queue)
+        self._active_requests.append(active_request)
 
         try:
             response = await task
@@ -38,8 +44,11 @@ class MessageManager:
         else:
             return response
         finally:
-            self._queues.remove(request_queue)
-            self._tasks.remove(task)
+            try:
+                self._active_requests.remove(active_request)
+            except ValueError:
+                # All is good, the item was already removed
+                pass
 
     async def wait_for_message(self, request, queue):
         try:
@@ -61,16 +70,41 @@ class MessageManager:
             return text("")
 
     async def add_message(self, message):
-        for queue in self._queues:
-            await queue.put(message)
+        for item in self._active_requests:
+            await item.queue.put(message)
 
     def cancel_all_tasks(self):
         self.closing = True  # Stop processing new requests
-        for queue in self._queues:
-            queue.put_nowait("")
+        for item in self._active_requests:
+            item.task.cancel()
+
+    def __len__(self):
+        return len(self._active_requests)
 
 
 manager = MessageManager()
+
+
+async def periodic_check():
+    """
+    Periodically checks if active long-polling requests are disconnected, and cancels
+    them if needed.
+    """
+    while True:
+        await asyncio.sleep(5)  # Example: check every 5 seconds
+
+        print("Checking active connections...")
+
+        for item in manager._active_requests:
+            request = item.request
+            if await request.is_disconnected():
+                print(f"Request {id(request)} is disconnected, cancelling its task...")
+                item.task.cancel()
+
+
+@app.on_start
+async def start_periodic_check():
+    asyncio.create_task(periodic_check())
 
 
 @app.on_start
@@ -81,7 +115,7 @@ async def on_start(_):
 
     def terminate_now(signum, frame):
         # clean up:
-        print("Cancelling the tasks...")
+        print(f"Cancelling the tasks ({len(manager)})...")
         manager.cancel_all_tasks()
         default_sigint_handler(signum, frame)  # type: ignore
 
@@ -95,7 +129,7 @@ async def on_subscribe(request):
 
 @get("/stats")
 def get_stats():
-    return json({"tasks": len(manager._tasks)})
+    return json({"active_requests": len(manager._active_requests)})
 
 
 @post("/publish")
