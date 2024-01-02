@@ -42,7 +42,8 @@ class MessageManager:
         try:
             response = await task
         except asyncio.CancelledError:
-            # Tasks are cancelled when the application stops
+            # Tasks are cancelled when the application stops, or periodically when
+            # a request is disconnected
             print("Task cancelled...")
             return no_content()
         else:
