@@ -26,6 +26,10 @@ class MessageManager:
         self._active_requests: list[ActiveRequest] = []
         self._timeout: float = 60
 
+    @property
+    def active_requests(self) -> list[ActiveRequest]:
+        return self._active_requests
+
     async def subscribe(self, request: Request):
         if self.closing:
             return text("")
@@ -95,7 +99,7 @@ async def periodic_check():
 
         print("Checking active connections...")
 
-        for item in manager._active_requests:
+        for item in manager.active_requests:
             request = item.request
             if await request.is_disconnected():
                 print(f"Request {id(request)} is disconnected, cancelling its task...")
@@ -108,13 +112,12 @@ async def start_periodic_check():
 
 
 @app.on_start
-async def on_start(_):
+async def configure_sigint_handler():
     # See the conversation here:
     # https://github.com/encode/uvicorn/issues/1579#issuecomment-1419635974
     default_sigint_handler = signal.getsignal(signal.SIGINT)
 
     def terminate_now(signum, frame):
-        # clean up:
         print(f"Cancelling the tasks ({len(manager)})...")
         manager.cancel_all_tasks()
         default_sigint_handler(signum, frame)  # type: ignore
