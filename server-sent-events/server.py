@@ -1,18 +1,23 @@
 import asyncio
 from collections.abc import AsyncIterable
+from functools import partial
 
-from blacksheep import Application, get
+from blacksheep import Application, Request, get
 from blacksheep.server.application import is_stopping
-from blacksheep.server.sse import ServerSentEvent, ServerEventsResponse
+from blacksheep.server.sse import ServerEventsResponse, ServerSentEvent
 
 app = Application(show_error_details=True)
 app.serve_files("static")
 
 
-async def events_provider() -> AsyncIterable[ServerSentEvent]:
+async def events_provider(request: Request) -> AsyncIterable[ServerSentEvent]:
     i = 0
 
     while True:
+        if await request.is_disconnected():
+            print("The request is disconnected!")
+            break
+
         if is_stopping():
             print("The application is stopping!")
             break
@@ -27,5 +32,5 @@ async def events_provider() -> AsyncIterable[ServerSentEvent]:
 
 
 @get("/events")
-def on_subscribe():
-    return ServerEventsResponse(events_provider)
+def on_subscribe(request: Request):
+    return ServerEventsResponse(partial(events_provider, request))
