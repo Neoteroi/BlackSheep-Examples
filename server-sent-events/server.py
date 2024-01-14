@@ -29,9 +29,3 @@ async def events_provider() -> AsyncIterable[ServerSentEvent]:
 @get("/events")
 def on_subscribe():
     return ServerEventsResponse(events_provider)
-
-
-if __name__ == "__main__":
-    import uvicorn
-
-    uvicorn.run(app, host="localhost", port=8000, lifespan="on")
