@@ -10,7 +10,7 @@ app.serve_files("static")
 
 
 @get("/events")
-async def on_subscribe(request: Request) -> AsyncIterable[ServerSentEvent]:
+async def events_handler(request: Request) -> AsyncIterable[ServerSentEvent]:
     i = 0
 
     while True:
