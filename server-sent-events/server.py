@@ -1,16 +1,16 @@
 import asyncio
 from collections.abc import AsyncIterable
-from functools import partial
 
 from blacksheep import Application, Request, get
 from blacksheep.server.application import is_stopping
-from blacksheep.server.sse import ServerEventsResponse, ServerSentEvent
+from blacksheep.server.sse import ServerSentEvent
 
 app = Application(show_error_details=True)
 app.serve_files("static")
 
 
-async def events_provider(request: Request) -> AsyncIterable[ServerSentEvent]:
+@get("/events")
+async def on_subscribe(request: Request) -> AsyncIterable[ServerSentEvent]:
     i = 0
 
     while True:
@@ -29,8 +29,3 @@ async def events_provider(request: Request) -> AsyncIterable[ServerSentEvent]:
             await asyncio.sleep(1)
         except asyncio.exceptions.CancelledError:
             break
-
-
-@get("/events")
-def on_subscribe(request: Request):
-    return ServerEventsResponse(partial(events_provider, request))
