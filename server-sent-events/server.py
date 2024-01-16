@@ -2,7 +2,7 @@ import asyncio
 from collections.abc import AsyncIterable
 
 from blacksheep import Application, Request, get
-from blacksheep.server.application import is_stopping
+from blacksheep.server.process import is_stopping
 from blacksheep.server.sse import ServerSentEvent
 
 app = Application(show_error_details=True)
