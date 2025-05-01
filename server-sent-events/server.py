@@ -1,4 +1,5 @@
 import asyncio
+import os
 from collections.abc import AsyncIterable
 
 from blacksheep import Application, Request, get
@@ -7,6 +8,10 @@ from blacksheep.server.sse import ServerSentEvent
 
 app = Application(show_error_details=True)
 app.serve_files("static")
+
+
+# Enable the signal handler to detect when the application is stopping.
+os.environ["APP_SIGNAL_HANDLER"] = "1"
 
 
 @get("/events")
