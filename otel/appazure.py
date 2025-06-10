@@ -2,6 +2,8 @@
 Basic OTEL example with Azure Application Insights.
 """
 
+import asyncio
+from contextlib import contextmanager
 import logging
 import os
 import weakref
@@ -21,7 +23,7 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.trace import SpanKind
 
 # Set your Azure Application Insights connection string here
-connection_string = "******"
+connection_string = os.getenv("APP_INSIGHTS_CONNECTION_STRING")
 
 os.environ["OTEL_RESOURCE_ATTRIBUTES"] = (
     "service.name=learning-app,service.namespace=learning,deployment.environment=local"
@@ -130,10 +132,53 @@ async def on_stop(app):
     pass  # Remove shutdown call if not supported
 
 
+@contextmanager
+def operation_context(component, operation_name, *args, **kwargs):
+    tracer = trace.get_tracer(__name__)
+    with tracer.start_as_current_span(operation_name, kind=SpanKind.CLIENT) as span:
+        span.set_attribute("component", component)
+        span.set_attribute("az.namespace", component)
+        for i, value in enumerate(args):
+            span.set_attribute(f"@arg{i}", str(value))
+        for key, value in kwargs.items():
+            span.set_attribute(f"@{key}", str(value))
+        try:
+            yield
+        except Exception as ex:
+            span.record_exception(ex)
+            span.set_attribute("ERROR", str(ex))
+            span.set_attribute("http.status_code", 500)
+            span.set_status(trace.Status(trace.StatusCode.ERROR))
+            raise
+
+
+def log_dep(component="Service"):
+    """
+    Wraps a function to log each call as a dependency in Application Insights.
+    """
+
+    def ailog_decorator(fn):
+        @wraps(fn)
+        async def wrapper(*args, **kwargs):
+            with operation_context(component, fn.__name__, *args, **kwargs):
+                return await fn(*args, **kwargs)
+
+        return wrapper
+
+    return ailog_decorator
+
+
+@log_dep("Example")
+async def dependency_example():
+    await asyncio.sleep(0.2)
+    raise RuntimeError("Crash!")
+
+
 @app.router.get("/")
 async def home(request) -> Response:
     # logger.warning appear in the traces table
     logger.warning("Example warning")
+    await dependency_example()
     return text("Hello, traced BlackSheep!")
 
 
