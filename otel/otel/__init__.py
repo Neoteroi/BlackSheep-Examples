@@ -6,6 +6,7 @@ import logging
 import os
 from contextlib import contextmanager
 from functools import wraps
+from typing import Dict
 
 from blacksheep import Application
 from blacksheep.messages import Request
@@ -77,14 +78,23 @@ def _configure_logging(log_exporter: LogExporter, span_exporter: SpanExporter):
     trace.get_tracer_provider().add_span_processor(BatchSpanProcessor(span_exporter))  # type: ignore
 
 
-def _set_attributes(
-    service_name: str = "unknown",
+def set_attributes(
+    service_name: str,
     service_namespace: str = "default",
     env: str = "",
 ):
-    if os.getenv("OTEL_RESOURCE_ATTRIBUTES") is not None:
-        return
+    """
+    Sets the OTEL_RESOURCE_ATTRIBUTES environment variable with service metadata
+    for OpenTelemetry.
 
+    Args:
+        service_name (str): The name of the service.
+        service_namespace (str, optional): The namespace of the service. Defaults to "default".
+        env (str, optional): The deployment environment. If not provided, it is determined from the environment.
+
+    Returns:
+        None
+    """
     if not env:
         env = get_env()
     os.environ["OTEL_RESOURCE_ATTRIBUTES"] = (
@@ -98,11 +108,11 @@ def use_open_telemetry(
     app: Application,
     log_exporter: LogExporter,
     span_exporter: SpanExporter,
-    service_name: str = "unknown",
-    service_namespace: str = "default",
-    env: str = "",
 ):
-    _set_attributes(service_name, service_namespace, env)
+    if os.getenv("OTEL_RESOURCE_ATTRIBUTES") is None:
+        # set a default value
+        set_attributes("blacksheep-app")
+
     _configure_logging(log_exporter, span_exporter)
 
     app.middlewares.append(OTELMiddleware(app.handle_request_handler_exception))
@@ -125,13 +135,12 @@ def use_open_telemetry(
 
 
 @contextmanager
-def operation_context(component, operation_name, *args, **kwargs):
+def client_span_context(
+    operation_name: str, attributes: Dict[str, str], *args, **kwargs
+):
     tracer = trace.get_tracer(__name__)
     with tracer.start_as_current_span(operation_name, kind=SpanKind.CLIENT) as span:
-        span.set_attribute("component", component)
-        span.set_attribute(
-            "az.namespace", component
-        )  # Useful for Application Insights!
+        span.set_attributes(attributes)
         for i, value in enumerate(args):
             span.set_attribute(f"@arg{i}", str(value))
         for key, value in kwargs.items():
@@ -154,7 +163,9 @@ def logcall(component="Service"):
     def log_decorator(fn):
         @wraps(fn)
         async def wrapper(*args, **kwargs):
-            with operation_context(component, fn.__name__, *args, **kwargs):
+            with client_span_context(
+                fn.__name__, {"component": component}, *args, **kwargs
+            ):
                 return await fn(*args, **kwargs)
 
         return wrapper

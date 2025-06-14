@@ -5,9 +5,10 @@ import os
 from blacksheep import Application, HTTPException, Response, json, text
 from dotenv import load_dotenv
 
-from otel.azure import log_dependency as logcall, use_application_insights
+from otel import logcall
+from otel.otlp import use_open_telemetry_otlp
 
-load_dotenv()
+load_dotenv(".envgrafana")
 
 os.environ["OTEL_RESOURCE_ATTRIBUTES"] = (
     "service.name=learning-app2,service.namespace=learning2,deployment.environment=local"
@@ -15,12 +16,7 @@ os.environ["OTEL_RESOURCE_ATTRIBUTES"] = (
 
 app = Application()
 
-connection_string = os.getenv("APP_INSIGHTS_CONNECTION_STRING")
-
-if connection_string is None:
-    raise ValueError("Missing env variable: APP_INSIGHTS_CONNECTION_STRING")
-
-use_application_insights(app, connection_string)
+use_open_telemetry_otlp(app)
 
 
 logger = logging.getLogger(__name__)

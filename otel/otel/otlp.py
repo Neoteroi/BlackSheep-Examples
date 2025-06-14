@@ -1,3 +1,17 @@
+"""
+This module provides integration for OpenTelemetry using OTLP (OpenTelemetry Protocol) exporters
+for logging and tracing in BlackSheep applications.
+
+It defines a helper function to configure OpenTelemetry with OTLPLogExporter and OTLPSpanExporter,
+ensuring that all required OTLP-related environment variables are set before initialization.
+
+Usage:
+    from otel.otlp import use_open_telemetry_otlp
+
+    app = Application()
+    use_open_telemetry_otlp(app)
+"""
+
 import os
 
 from blacksheep import Application
@@ -7,12 +21,10 @@ from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExport
 from . import use_open_telemetry
 
 
-def use_open_telemetry_otlp(
-    app: Application,
-    service_name: str = "unknown",
-    service_namespace: str = "default",
-    env: str = "",
-):
+__all__ = ["use_open_telemetry_otlp"]
+
+
+def use_open_telemetry_otlp(app: Application):
     """
     Configures OpenTelemetry for a BlackSheep application using OTLP exporters.
 
@@ -21,9 +33,6 @@ def use_open_telemetry_otlp(
 
     Args:
         app: The BlackSheep Application instance.
-        service_name: The name of the service (default: "unknown").
-        service_namespace: The namespace of the service (default: "default").
-        env: The deployment environment (default: "").
 
     Raises:
         ValueError: If any required OTLP environment variables are missing.
@@ -43,7 +52,4 @@ def use_open_telemetry_otlp(
         app,
         OTLPLogExporter(),
         OTLPSpanExporter(),
-        service_name,
-        service_namespace,
-        env,
     )

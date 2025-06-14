@@ -1,19 +1,32 @@
-from blacksheep import Application
-from . import use_open_telemetry
+"""
+This module provides functions to configure OpenTelemetry logging with an
+Azure Application Insights service.
 
+To use, install the following dependencies:
+
+pip install opentelemetry-distro opentelemetry-exporter-otlp
+opentelemetry-bootstrap --action=install
+
+pip install azure-monitor-opentelemetry-exporter
+"""
+
+from functools import wraps
 
 from azure.monitor.opentelemetry.exporter import (
     AzureMonitorLogExporter,
     AzureMonitorTraceExporter,
 )
+from blacksheep import Application
+
+from . import client_span_context, use_open_telemetry
+
+
+__all__ = ["use_application_insights", "log_dependency"]
 
 
 def use_application_insights(
     app: Application,
     connection_string: str,
-    service_name: str = "unknown",
-    service_namespace: str = "default",
-    env: str = "",
 ):
     """
     Configures OpenTelemetry for a BlackSheep application using Azure Application Insights.
@@ -23,15 +36,27 @@ def use_application_insights(
     Args:
         app: The BlackSheep Application instance.
         connection_string: Azure Application Insights connection string.
-        service_name: The name of the service (default: "unknown").
-        service_namespace: The namespace of the service (default: "default").
-        env: The deployment environment (default: "").
     """
     use_open_telemetry(
         app,
         AzureMonitorLogExporter(connection_string=connection_string),
         AzureMonitorTraceExporter(connection_string=connection_string),
-        service_name,
-        service_namespace,
-        env,
     )
+
+
+def log_dependency(component="Service"):
+    """
+    Wraps a function to log each call using OpenTelemetry.
+    """
+
+    def log_decorator(fn):
+        @wraps(fn)
+        async def wrapper(*args, **kwargs):
+            with client_span_context(
+                fn.__name__, {"az.namespace": component}, *args, **kwargs
+            ):
+                return await fn(*args, **kwargs)
+
+        return wrapper
+
+    return log_decorator
