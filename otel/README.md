@@ -35,6 +35,9 @@ pip install blacksheep uvicorn
    `/crash`, `/example`.
 5. Observe how logs appear in the Azure Application Insights service.
 
+![image](https://github.com/user-attachments/assets/f1fac2db-228c-4573-bbe1-e9f544bd3065)
+
+
 ### Running the Grafana example
 
 1. Install the dependencies like documented above, including
@@ -55,6 +58,8 @@ OTEL_EXPORTER_OTLP_ENDPOINT="https://otlp-gateway-prod-eu-north-0.grafana.net/ot
 OTEL_EXPORTER_OTLP_HEADERS="Authorization=Basic%20******"
 OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"
 ```
+
+![image](https://github.com/user-attachments/assets/2e4722e4-eb14-49ad-b5dc-a542c47f0e48)
 
 ## Folder structure
 
