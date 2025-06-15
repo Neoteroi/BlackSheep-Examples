@@ -1,4 +1,5 @@
 # BlackSheep-Examples
+
 Various examples for BlackSheep.
 
 | Example                                                  | Description                                                                                                                                                                                                                                                                               |
@@ -16,3 +17,4 @@ Various examples for BlackSheep.
 | [./long-polling](./long-polling)                         | Shows an example of long polling implemented using BlackSheep.                                                                                                                                                                                                                            |
 | [./server-sent-events](./server-sent-events)             | Shows a basic example of how to use [Server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) with BlackSheep (>=2.0.6).                                                                                                         |
 | [./dependency-injector](./dependency-injector/)          | Shows how to use [Dependency Injector](https://python-dependency-injector.ets-labs.org/) instead of [Rodi](https://www.neoteroi.dev/rodi/).                                                                                                                                               |
+| [./otel](./otel/)                                        | Shows how to use [OpenTelemetry](https://opentelemetry.io/) integration with [Grafana](https://grafana.com/), and with [Azure Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview).                                                     |

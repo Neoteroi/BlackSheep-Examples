@@ -4,10 +4,17 @@ Azure Application Insights service.
 
 To use, install the following dependencies:
 
-pip install opentelemetry-distro opentelemetry-exporter-otlp
-opentelemetry-bootstrap --action=install
+Install:
+    pip install opentelemetry-distro opentelemetry-exporter-otlp
+    opentelemetry-bootstrap --action=install
 
-pip install azure-monitor-opentelemetry-exporter
+    pip install azure-monitor-opentelemetry-exporter
+
+Usage:
+    from otel.azure import use_application_insights
+
+    app = Application()
+    use_application_insights(app, connection_string)
 """
 
 from functools import wraps
@@ -44,16 +51,17 @@ def use_application_insights(
     )
 
 
-def log_dependency(component="Service"):
+def log_dependency(namespace="Service"):
     """
-    Wraps a function to log each call using OpenTelemetry.
+    Wraps a function to log each call using OpenTelemetry, as dependency
+    in Azure Application Insights.
     """
 
     def log_decorator(fn):
         @wraps(fn)
         async def wrapper(*args, **kwargs):
             with client_span_context(
-                fn.__name__, {"az.namespace": component}, *args, **kwargs
+                fn.__name__, {"az.namespace": namespace}, *args, **kwargs
             ):
                 return await fn(*args, **kwargs)
 

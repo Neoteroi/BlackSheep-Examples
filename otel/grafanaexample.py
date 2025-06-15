@@ -8,10 +8,10 @@ from dotenv import load_dotenv
 from otel import logcall
 from otel.otlp import use_open_telemetry_otlp
 
-load_dotenv(".envgrafana")
+load_dotenv()
 
 os.environ["OTEL_RESOURCE_ATTRIBUTES"] = (
-    "service.name=learning-app2,service.namespace=learning2,deployment.environment=local"
+    "service.name=learning-app,service.namespace=learning,deployment.environment=local"
 )
 
 app = Application()
@@ -22,6 +22,8 @@ use_open_telemetry_otlp(app)
 logger = logging.getLogger(__name__)
 
 
+# The following is to illustrate support for controlling the request-response cycle
+# using exceptions and exception handlers
 class CustomException(HTTPException):
     def __init__(self):
         super().__init__(400, "Something wrong!")

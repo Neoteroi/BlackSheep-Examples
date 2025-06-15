@@ -1,15 +1,26 @@
 """
-This module provides classes and functions to work with OpenTelemetry.
+This module provides middleware, context managers, and helper functions to enable
+distributed tracing and logging using OpenTelemetry.
+
+Features:
+- OTELMiddleware: Middleware for automatic tracing of HTTP requests.
+- Environment-based configuration for OpenTelemetry resource attributes.
+- Logging and tracing setup using user-provided exporters.
+- Context manager and decorator utilities for tracing custom operations and function calls.
+
+Usage:
+    from otel import use_open_telemetry
+    use_open_telemetry(app, log_exporter, span_exporter)
 """
 
 import logging
 import os
 from contextlib import contextmanager
 from functools import wraps
-from typing import Dict
+from typing import Awaitable, Callable, Dict
 
-from blacksheep import Application
-from blacksheep.messages import Request
+from blacksheep import Application, Response
+from blacksheep.messages import Request, Response
 from blacksheep.server.env import get_env
 from opentelemetry import trace
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
@@ -20,14 +31,17 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor, SpanExporter
 from opentelemetry.trace import SpanKind
 
 
+ExceptionHandler = Callable[[Request, Exception], Awaitable[Response]]
+
+
 class OTELMiddleware:
     """
     Middleware configuring OpenTelemetry for all web requests.
     """
 
-    def __init__(self, exc_handler, tracer_name: str | None = None) -> None:
+    def __init__(self, exc_handler: ExceptionHandler) -> None:
         self._exc_handler = exc_handler
-        self._tracer = trace.get_tracer(tracer_name or __name__)
+        self._tracer = trace.get_tracer(__name__)
 
     async def __call__(self, request: Request, handler):
         path = request.url.path.decode("utf8")
@@ -38,34 +52,43 @@ class OTELMiddleware:
             try:
                 response = await handler(request)
             except Exception as exc:
+                # This approach is correct because it supports controlling the response
+                # using exceptions. Unhandled exceptions are handled by the Span.
                 response = await self._exc_handler(request, exc)
 
-            # Optional: to reduce cardinality, update the span name with the now
-            # available route that matched the request (if any)
-            route = request.route  # type: ignore
-            span.update_name(f"{method} {route}")
-
-            span.set_attribute("http.status_code", response.status)
-            span.set_attribute("http.method", request.method)
-            span.set_attribute("http.path", path)
-            span.set_attribute("http.url", request.url.value.decode())
-            span.set_attribute("http.route", route)
-            span.set_attribute("http.status_code", response.status)
-            span.set_attribute("client.ip", request.original_client_ip)
-
-            if response.status >= 400:
-                span.set_status(trace.Status(trace.StatusCode.ERROR))
-
+            self.set_span_attributes(span, request, response, path)
             return response
+
+    def set_span_attributes(
+        self, span: trace.Span, request: Request, response: Response, path: str
+    ) -> None:
+        """
+        Configure the attributes on the span for a given request-response cycle.
+        """
+        # To reduce cardinality, update the span name to use the
+        # route that matched the request
+        route = request.route  # type: ignore
+        span.update_name(f"{request.method} {route}")
+
+        span.set_attribute("http.status_code", response.status)
+        span.set_attribute("http.method", request.method)
+        span.set_attribute("http.path", path)
+        span.set_attribute("http.url", request.url.value.decode())
+        span.set_attribute("http.route", route)
+        span.set_attribute("http.status_code", response.status)
+        span.set_attribute("client.ip", request.original_client_ip)
+
+        if response.status >= 400:
+            span.set_status(trace.Status(trace.StatusCode.ERROR))
 
 
 def _configure_logging(log_exporter: LogExporter, span_exporter: SpanExporter):
     log_provider = LoggerProvider()
     log_provider.add_log_record_processor(BatchLogRecordProcessor(log_exporter))
-    logging.setLoggerClass(logging.getLoggerClass())
     logging.getLogger("opentelemetry").setLevel(logging.WARNING)
-    otel_handler = LoggingHandler(level=logging.NOTSET, logger_provider=log_provider)
-    logging.getLogger().addHandler(otel_handler)
+    logging.getLogger().addHandler(
+        LoggingHandler(level=logging.NOTSET, logger_provider=log_provider)
+    )
 
     logging.basicConfig(
         level=logging.INFO,
@@ -89,8 +112,10 @@ def set_attributes(
 
     Args:
         service_name (str): The name of the service.
-        service_namespace (str, optional): The namespace of the service. Defaults to "default".
-        env (str, optional): The deployment environment. If not provided, it is determined from the environment.
+        service_namespace (str, optional): The namespace of the service. Defaults to
+                                           "default".
+        env (str, optional): The deployment environment. If not provided, it is
+                            determined from the environment.
 
     Returns:
         None
@@ -133,6 +158,14 @@ def use_open_telemetry(
 
         app.router.get_match = wrap_get_route_match(app.router.get_match)  # type: ignore
 
+    @app.on_stop
+    async def on_stop(app):
+        # Try calling shutdown() on app stop to flush all remaining spans.
+        try:
+            trace.get_tracer_provider().shutdown()  # type: ignore
+        except TypeError:
+            pass
+
 
 @contextmanager
 def client_span_context(
@@ -157,7 +190,7 @@ def client_span_context(
 
 def logcall(component="Service"):
     """
-    Wraps a function to log each call using OpenTelemetry.
+    Wraps a function to log each call using OpenTelemetry, as SpanKind.CLIENT.
     """
 
     def log_decorator(fn):

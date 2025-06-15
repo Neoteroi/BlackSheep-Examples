@@ -5,6 +5,10 @@ for logging and tracing in BlackSheep applications.
 It defines a helper function to configure OpenTelemetry with OTLPLogExporter and OTLPSpanExporter,
 ensuring that all required OTLP-related environment variables are set before initialization.
 
+Install:
+    pip install opentelemetry-distro opentelemetry-exporter-otlp
+    opentelemetry-bootstrap --action=install
+
 Usage:
     from otel.otlp import use_open_telemetry_otlp
 
