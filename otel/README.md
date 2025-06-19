@@ -4,6 +4,12 @@ This folder contains examples to use [OpenTelemetry](https://opentelemetry.io/)
 integration with [Grafana](https://grafana.com/), and with [Azure Application
 Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview).
 
+> [!IMPORTANT]
+> This example includes code that can be used to integrate OpenTelemetry telemetries with
+> versions of the framework before `2.3.2`. Since `2.3.2`, vendor-agnostic code from this
+> example have been included in the BlackSheep framework.
+> For more information, refer to the documentation at https://www.neoteroi.dev/blacksheep/opentelemetry/
+
 ## Requirements
 
 ```bash
