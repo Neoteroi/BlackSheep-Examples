@@ -1,6 +1,6 @@
 # BlackSheep-Examples
 
-Various examples for BlackSheep.
+Examples for BlackSheep.
 
 | Example                                                  | Description                                                                                                                                                                                                                                                                               |
 | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -18,3 +18,5 @@ Various examples for BlackSheep.
 | [./server-sent-events](./server-sent-events)             | Shows a basic example of how to use [Server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events) with BlackSheep (>=2.0.6).                                                                                                         |
 | [./dependency-injector](./dependency-injector/)          | Shows how to use [Dependency Injector](https://python-dependency-injector.ets-labs.org/) instead of [Rodi](https://www.neoteroi.dev/rodi/).                                                                                                                                               |
 | [./otel](./otel/)                                        | Shows how to use [OpenTelemetry](https://opentelemetry.io/) integration with [Grafana](https://grafana.com/), and with [Azure Application Insights](https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview).                                                     |
+| [./multipart](./multipart/)                              | Shows how to define custom classes to handle multipart/form-data input.                                                                                                                                                                                                                   |
+| [./a2wsgi](./a2wsgi/)                                    | Shows an example to use [`a2wsgi`](https://github.com/abersheeran/a2wsgi) with [`Gunicorn`](https://gunicorn.org/) or [`uWSGI`](https://uwsgi-docs.readthedocs.io/en/latest/).                                                                                                            |
