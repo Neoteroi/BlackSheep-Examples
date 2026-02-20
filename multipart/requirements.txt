@@ -1,0 +1,16 @@
+blacksheep==2.6.0
+certifi==2026.1.4
+click==8.3.1
+essentials==1.1.9
+essentials-openapi==1.3.0
+guardpost==1.0.4
+h11==0.16.0
+h2==4.3.0
+hpack==4.1.0
+httptools==0.7.1
+hyperframe==6.1.0
+itsdangerous==2.2.0
+MarkupSafe==3.0.3
+PyYAML==6.0.3
+rodi==2.0.8
+uvicorn==0.40.0
