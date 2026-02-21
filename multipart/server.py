@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-import shutil
+import aiofiles
 from blacksheep import Application, FromForm, FileBuffer, Request, FromFiles
 from blacksheep.server.openapi.v3 import OpenAPIHandler
 from openapidocs.v3 import Info
@@ -10,6 +10,12 @@ docs = OpenAPIHandler(info=Info(title="Example API", version="0.0.1"))
 docs.bind_app(app)
 
 app.serve_files("static", discovery=True, fallback_document="index.html")
+
+
+async def _write_chunks(source, dest_path: str, chunk_size: int = 65536) -> None:
+    async with aiofiles.open(dest_path, "wb") as out_file:
+        while chunk := source.read(chunk_size):
+            await out_file.write(chunk)
 
 
 @dataclass
@@ -72,29 +78,25 @@ async def upload_text(request: Request):
 
 
 @app.router.post("/upload-files-form-method")
-async def upload_files_form_method2(request: Request):
+async def upload_files_form_method_1(request: Request):
     data = await request.form()
 
     avatar = data['avatar'][0]
-    with open(f".out/{avatar.file_name.decode()}", "wb") as out_file:
-        shutil.copyfileobj(avatar.file, out_file)
+    await _write_chunks(avatar.file, f".out/{avatar.file_name.decode()}")
 
     for document in data["documents"]:
-        with open(f".out/{document.file_name.decode()}", "wb") as out_file:
-            shutil.copyfileobj(document.file, out_file)
+        await _write_chunks(document.file, f".out/{document.file_name.decode()}")
     return "OK"
 
 @app.router.post("/upload-files-multipart-method")
-async def upload_files_form_method(request: Request):
+async def upload_files_form_method_2(request: Request):
     parts = await request.multipart()
 
     for part in parts:
         if part.file_name:
-            with open(f".out/{part.file_name.decode()}", "wb") as out_file:
-                shutil.copyfileobj(part.file, out_file)
+            await _write_chunks(part.file, f".out/{part.file_name.decode()}")
         else:
-            with open(f".out/{part.name.decode()}", "wb") as out_file:
-                shutil.copyfileobj(part.file, out_file)
+            await _write_chunks(part.file, f".out/{part.name.decode()}")
     return "OK"
 
 

@@ -1,3 +1,4 @@
+aiofiles
 blacksheep==2.6.0
 certifi==2026.1.4
 click==8.3.1
