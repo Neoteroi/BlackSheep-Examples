@@ -1,0 +1,4 @@
+a2wsgi==1.10.10
+blacksheep==2.6.1
+gunicorn==25.1.0
+uWSGI==2.0.31
