@@ -140,3 +140,4 @@ dmypy.json
 .ruff_cache
 /**/.ruff_cache
 .local/
+/**/.out/

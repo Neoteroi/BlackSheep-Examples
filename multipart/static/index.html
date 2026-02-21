@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multipart Form Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: #f9f9f9;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: #fff;
+            padding: 2em;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-top: 1em;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        input[type="tel"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.5em;
+            margin-top: 0.25em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        input[type="submit"] {
+            margin-top: 2em;
+            width: 100%;
+            padding: 0.75em;
+            background: #0078d7;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background: #005fa3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Multipart Form Example</h1>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="subscribe">
+                <input type="checkbox" id="subscribe" name="subscribe" value="yes">
+                Subscribe to newsletter
+            </label>
+
+            <label for="avatar">Profile Picture:</label>
+            <input type="file" id="avatar" name="avatar" accept="image/*" required>
+
+            <label for="documents">Upload Documents (multiple, optional):</label>
+            <input type="file" id="documents" name="documents" multiple>
+
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+    <div class="container">
+        <h1>Streaming File Upload Example</h1>
+        <p style="color: #454545; text-align: center;">Upload files using streaming multipart parsing</p>
+        <h2>Form method</h2>
+        <form action="/upload-files-form-method" method="post" enctype="multipart/form-data">
+            <label for="avatar">Profile Picture:</label>
+            <input type="file" id="avatar" name="avatar" accept="image/*" required>
+            <input name="asda" type="hidden" value="hello-x" />
+            <label for="documents">Upload Documents (multiple):</label>
+            <input type="file" id="documents" name="documents" multiple required>
+
+            <input type="submit" value="Submit">
+        </form>
+        <hr />
+        <h2>Multipart method</h2>
+        <form action="/upload-files-multipart-method" method="post" enctype="multipart/form-data">
+            <label for="avatar">Profile Picture:</label>
+            <input type="file" id="avatar" name="avatar" accept="image/*" required>
+            <input name="asda" type="hidden" value="hello-x" />
+            <label for="documents">Upload Documents (multiple):</label>
+            <input type="file" id="documents" name="documents" multiple required>
+
+            <input type="submit" value="Submit">
+        </form>
+        <hr />
+        <h2>From files</h2>
+        <form action="/from-files" method="post" enctype="multipart/form-data">
+            <label for="avatar">Profile Picture:</label>
+            <input type="file" id="avatar" name="avatar" accept="image/*" required>
+            <input name="asda" type="hidden" value="hello-x" />
+            <label for="documents">Upload Documents (multiple):</label>
+            <input type="file" id="documents" name="documents" multiple required>
+
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+    <div class="container">
+        <h1>Streaming Text Example</h1>
+        <p style="color: #454545; text-align: center;">Streaming text upload</p>
+        <form action="/upload-text" method="post" enctype="multipart/form-data">
+            <label for="text">Text:</label>
+            <textarea id="text" name="example" rows="10" cols="40"></textarea>
+
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+    <div class="container">
+        <h1>Streaming File Upload Example</h1>
+        <p style="color: #454545; text-align: center;">Upload files using streaming multipart parsing</p>
+        <form action="/upload-files" method="post" enctype="multipart/form-data">
+            <label for="avatar">Profile Picture:</label>
+            <input type="file" id="avatar" name="avatar" accept="image/*" required>
+            <input name="asda" type="hidden" value="hello-x" />
+            <label for="documents">Upload Documents (multiple):</label>
+            <input type="file" id="documents" name="documents" multiple required>
+
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+</body>
+
+</html>
