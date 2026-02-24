@@ -3,6 +3,8 @@
 This example demonstrates how to handle requests with multiple content types in
 [BlackSheep](https://github.com/Neoteroi/BlackSheep) (requires **BlackSheep >= 2.6.2**).
 
+For context, see https://github.com/Neoteroi/BlackSheep/pull/669 and https://github.com/Neoteroi/BlackSheep/issues/514.
+
 ## Overview
 
 The `POST /foo` endpoint accepts request bodies in any of the following formats:
